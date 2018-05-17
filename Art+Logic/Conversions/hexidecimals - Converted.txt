@@ -1,0 +1,5 @@
+-6902
+401D
+-113
+6230
+5E7F equates to a hexadecimal value out of the valid 14-bit integer range [-8192..+8191]

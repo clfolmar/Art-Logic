@@ -1,0 +1,216 @@
+﻿@model Art_Logic.Models.IntToHex
+
+@{
+    ViewBag.Title = "Integers and Hexadecimal Conversion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Art+Logic Programming Challenge: Part 1</h2>
+
+
+@using (Html.BeginForm("Convert", "Conversion", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <div class="container">
+            <div class="col-md-8">
+                <p class="alert alert-warning">
+                    Please <strong style="color:red">either</strong> upload a data file or enter a value to convert
+                </p>
+
+                <hr />
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IntToConvert, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.IntToConvert, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-6">
+                        @Html.ValidationMessageFor(model => model.IntToConvert, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HexToConvert, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.HexToConvert, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-md-6">
+                        @Html.ValidationMessageFor(model => model.HexToConvert, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.File, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-6">
+                        <input type="file" name="File" id="File" class="" />
+                    </div>
+                    <div class="col-md-6">
+                        @Html.ValidationMessageFor(model => model.File, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @{
+                    // Integer
+                    if (ViewBag.IntConverted != null && ViewBag.IntConverted == true)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-8 alert alert-success">
+                                <strong>
+                                    Successfully converted integer @ViewBag.ValToConvert to hexadecimal @ViewBag.Result
+                                </strong>
+                            </div>
+                        </div>
+                    }
+
+                    // Hexadecimal
+                    if (ViewBag.HexConverted != null && ViewBag.HexConverted == true)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-8 alert alert-success">
+                                <strong>
+                                    Successfully converted hexadecimal @ViewBag.ValToConvert to integer @ViewBag.Result
+                                </strong>
+                            </div>
+                        </div>
+                    }
+
+                    // File
+                    else if (ViewBag.FileConverted != null && ViewBag.FileConverted == true)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-10 alert alert-success">
+                                <strong>
+                                    Successfully converted file @ViewBag.ValToConvert to @ViewBag.Result which can be found at @ViewBag.Location
+
+                                </strong>
+                            </div>
+                        </div>
+                    }
+
+                    // Error
+                    else if (ViewBag.Error != null && ViewBag.Error == true)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-10 alert alert-danger">
+                                <strong>
+                                    Submission Error.  Please try again with a signed integer in the 14-bit range [-8192..+8191]
+                                    or a hexadecimal in the range of [0..7F7F]
+                                </strong>
+                            </div>
+                        </div>
+                    }
+
+                    // Exception
+                    else if (ViewBag.Exception != null && ViewBag.Exception == true)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-10 alert alert-danger">
+                                <strong>
+                                    Exception Message: @ViewBag.ExceptionMessage
+
+                                    InnerException Message: @ViewBag.InnerExceptionMesSage
+                                </strong>
+                            </div>
+                        </div>
+                    }
+                }
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Convert" class="btn btn-default" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            var intToConvert = $("#IntToConvert");
+            var hexToConvert = $("#HexToConvert");
+            var fileToConvert = $('#File');
+
+            if (intToConvert.val().length > 0) {
+                fileToConvert.attr('disabled', 'disabled');
+                fileToConvert.val('');
+
+                hexToConvert.attr('disabled', 'disabled');
+                hexToConvert.val('');
+            }
+            else if (hexToConvert.val().length > 0) {
+                fileToConvert.attr('disabled', 'disabled');
+                fileToConvert.val('');
+
+                intToConvert.attr('disabled', 'disabled');
+                intToConvert.val('');
+            }
+            else if (fileToConvert.val().length > 0) {
+                intToConvert.attr('disabled', 'disabled');
+                intToConvert.val('');
+
+                hexToConvert.attr('disabled', 'disabled');
+                hexToConvert.val('');
+            }
+
+
+
+            intToConvert.on('input', function () {
+
+                if (intToConvert.val().length > 0) {
+                    fileToConvert.attr('disabled', 'disabled');
+                    fileToConvert.val('');
+
+                    hexToConvert.attr('disabled', 'disabled');
+                    hexToConvert.val('');
+                }
+                else {
+                    fileToConvert.removeAttr('disabled');
+                    hexToConvert.removeAttr('disabled');
+                }
+            });
+
+            hexToConvert.on('input', function () {
+
+                if (hexToConvert.val().length > 0) {
+                    fileToConvert.attr('disabled', 'disabled');
+                    fileToConvert.val('');
+
+                    intToConvert.attr('disabled', 'disabled');
+                    intToConvert.val('');
+                }
+                else {
+                    fileToConvert.removeAttr('disabled');
+                    intToConvert.removeAttr('disabled');
+                }
+
+            });
+
+            fileToConvert.on('change', function () {
+
+                if (fileToConvert.val().length > 0) {
+                    intToConvert.attr('disabled', 'disabled');
+                    intToConvert.val('');
+
+                    hexToConvert.attr('disabled', 'disabled');
+                    hexToConvert.val('');
+                }
+                else {
+                    intToConvert.removeAttr('disabled');
+                    hexToConvert.removeAttr('disabled');
+                }
+
+            });
+
+        });
+    </script>
+}
